@@ -199,7 +199,8 @@ método de construção, que é executado sempre que `MaterialApp` requer render
 no Inspetor do flutter.
 
 <p align="center">
-  <img src="https://flutter.dev/assets/get-started/android/step2-45e5a16e59926599e09b25b1c6d37372f77b69151cbebd070d2f94f657b1abde.png" width="300"/>
+  <img src="https://flutter.dev/assets/get-started/android/step2-45e5a16e59926599e09b25b1c6d37372f77b69151cbebd070d2f94f657b1abde.png" width="200"/>
+  <img src="https://flutter.dev/assets/get-started/ios/step2-de9da90d2a90351c8d651c50f345c822472dbcd93cd8bad099e4edf2aa499c43.png"> width="200" />
 </p>
 
 ## Problemas?
