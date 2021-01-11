@@ -17,7 +17,7 @@ Caso tenha gostado do projeto, apoie, favorite e veja esse outro projeto:
     + ChromeOS
   + Editor
   + TestDrive
-  + Escrevendo seu primeiro aplicativo
+  + [Escrevendo seu primeiro aplicativo](get-started/codelab.md)
   + Veja mais
   + De Outra Plataforma?
     + Flutter para programadores Android
