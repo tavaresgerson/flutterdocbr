@@ -131,7 +131,85 @@ arquivo `pubspec.yaml`. Isso permitirá que você use mais recursos do Material,
 * O corpo para este exemplo consiste em um widget `Center` que contém um widget `Text`como filho. O widget `Center` alinha sua subárvore de 
   widget ao centro da tela.
   
-  ## Etapa 2: use um pacote externo
+## Etapa 2: use um pacote externo
 
+Nesta etapa, você começará a usar um pacote de código aberto chamado `english_words`, que contém alguns milhares das palavras em 
+inglês mais usadas, além de algumas funções de utilitário.
 
+Você pode encontrar o pacote `english_words`, bem como muitos outros pacotes de código aberto, em [pub.dev](pub.dev).
+
+1. 1O arquivo `pubspec.yaml` gerencia os assets e dependências de um aplicativo Flutter. Em `pubspec.yaml`, adicione `english_words` (3.1.5 ou superior) 
+à lista de dependências:
+
+```yaml
+dependencies:            
+   flutter:            
+     sdk: flutter            
+   cupertino_icons: ^0.1.2            
+ + english_words: ^3.1.5
+```
+
+2. Ao visualizar o arquivo `pubspec.yaml` na visualização do editor do Android Studio, clique em **Pub get**. Isso 
+puxa o pacote para o seu projeto. Você deve ver o seguinte no console:
+
+```bash
+flutter pub get
+Running "flutter pub get" in startup_namer...
+Process finished with exit code 0
+```
+O **Pub get** também gera automaticamente o arquivo `pubspec.lock` com uma lista de todos os pacotes puxados para o projeto e seus números de versão.
+
+3. Em `lib/main.dart`, importe o novo pacote:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
+```
+
+Conforme você digita, o Android Studio oferece sugestões de bibliotecas para importar. Em seguida, ele renderiza a string de 
+importação em cinza, permitindo que você saiba que a biblioteca importada não está sendo usada (até o momento).
+
+Use o pacote de palavras em inglês para gerar o texto em vez de usar a string “Hello World”:
+
+```dart
+class MyApp extends StatelessWidget {            
+ @override            
+ Widget build(BuildContext context) {            
++  final wordPair = WordPair.random();            
+     return MaterialApp(            
+       title: 'Welcome to Flutter',            
+       home: Scaffold(            
+@@ -16,7 +18,7 @@    
+           title: Text('Welcome to Flutter'),            
+       ),            
+       body: Center(            
+-       child: Text('Hello World'),            
++       child: Text(wordPair.asPascalCase),            
+       ),            
+      ),            
+    );
+```
+> Nota: “Pascal case” (também conhecido como “upper camel case”), significa que cada palavra na string, 
+> incluindo a primeira, começa com uma letra maiúscula. Portanto, “uppercamelcase” se torna “UpperCamelCase”.
+
+5. Se o aplicativo estiver em execução, recarregue com hot-reload para atualizar o aplicativo em execução. 
+Cada vez que você clica em hot-reload ou salva o projeto, você deve ver um par de palavras diferente, escolhido 
+aleatoriamente, no aplicativo em execução. Isso ocorre porque o emparelhamento de palavras é gerado dentro do 
+método de construção, que é executado sempre que `MaterialApp` requer renderização ou ao alternar a plataforma 
+no Inspetor do flutter.
+
+<p align="center">
+  <img src="https://flutter.dev/assets/get-started/android/step2-45e5a16e59926599e09b25b1c6d37372f77b69151cbebd070d2f94f657b1abde.png" width="300"/>
+</p>
+
+## Problemas?
+
+Se o seu aplicativo não estiver funcionando corretamente, procure erros de digitação. Se você quiser experimentar algumas das 
+ferramentas de depuração do Flutter, verifique o conjunto DevTools de ferramentas de depuração e criação de perfil. Se necessário, 
+use o código nos links a seguir para voltar aos trilhos.
+
+* [pubspec.yaml](https://raw.githubusercontent.com/flutter/codelabs/master/startup_namer/step2_use_package/pubspec.yaml)
+* [lib/main.dart](https://raw.githubusercontent.com/flutter/codelabs/master/startup_namer/step2_use_package/lib/main.dart)
+
+## Etapa 3: adicionar um widget com estado
 
