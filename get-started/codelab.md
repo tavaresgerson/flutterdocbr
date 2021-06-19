@@ -214,3 +214,223 @@ use o código nos links a seguir para voltar aos trilhos.
 
 ## Etapa 3: adicionar um widget com estado
 
+Widgets sem estado são imutáveis, o que significa que suas propriedades não podem ser alteradas - todos os valores são finais.
+
+Estado _ful_ são widgets que podem manter o estado e que pode mudar durante o tempo de vida. A implementação de um widget com estado 
+requer pelo menos duas classes: 1) uma classe `StatefulWidget` que cria uma instância de 2) uma classe `State`. A classe `StatefulWidget` é, em si, 
+imutável e pode ser descartada e regenerada, mas a classe `State` persiste durante a vida útil do widget.
+
+Nesta etapa, você adicionará um widget com estado, `RandomWords` que cria sua classe `State` `_RandomWordsState`. Em seguida, você o usará `RandomWords`
+como filho dentro do widget `MyApp` sem estado existente.
+
+1. Crie o código padrão para um widget com estado.
+  Em `lib/main.dart`, posicione o cursor após todo o código, digite **Enter** algumas vezes para começar em uma nova linha. Em sua IDE, 
+  comece a digitar `stful`. O editor pergunta se você deseja criar um widget `Stateful`. Pressione `Enter` para aceitar. O código padrão 
+  para duas classes aparece e o cursor é posicionado para você inserir o nome do seu widget com estado.
+
+2. Digite `RandomWords` que será o nome do seu widget.
+  O widget `RandomWords` faz pouco mais do que criar sua classe `State`.
+
+  Depois de inserir `RandomWords`, o IDE atualiza automaticamente a classe `State` que a acompanha , nomeando-a para `_RandomWordsState`. Por padrão, 
+  o nome da classe `State` é prefixado com uma barra inferior. Prefixar um identificador com um sublinhado reforça a privacidade na linguagem Dart 
+  e é uma prática recomendada para objetos `State`.
+
+  O IDE também atualiza automaticamente a classe de estado para estender `State<RandomWords>`, indicando que você está usando uma classe `State` genérica 
+  especializada para uso com `RandomWords`. A maior parte da lógica do aplicativo reside aqui - ele mantém o estado do widget `RandomWords`. Esta classe 
+  salva a lista de pares de palavras gerados, que aumenta infinitamente conforme o usuário rola e, na parte 2 deste laboratório, você verá pares de palavras 
+  favoritos conforme o usuário os adiciona ou remove da lista, alternando o ícone de coração.
+
+  Ambas as classes agora têm a seguinte aparência:
+
+```dart
+class RandomWords extends StatefulWidget {
+  @override
+  _RandomWordsState createState() => _RandomWordsState();
+}
+
+class _RandomWordsState extends State<RandomWords> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+```
+
+3. Atualize o método `build()` em `_RandomWordsState`:
+
+```dart
+// lib/main.dart (_RandomWordsState)
+
+class _RandomWordsState extends State<RandomWords> {
+    @override
+    Widget build(BuildContext context) {
+      final wordPair = WordPair.random();
+      return Text(wordPair.asPascalCase);
+    }
+  }
+```
+
+Remova o código de geração de palavras `MyApp` fazendo as alterações mostradas na seguinte comparação:
+
+```dart
+// {step2_use_package → step3_stateful_widget} /lib/main.dart
+@@ -10,7 +10,6 @@
+	  class  MyApp  extends  StatelessWidget  {
+	    @sobrepor
+	    Construção de widget (contexto BuildContext) {
+	-  última wordPair = WordPair.random ();    
+	      return MaterialApp (
+	        título: 'Bem-vindo ao Flutter' ,
+	        casa: Scaffold (
+@@ -18,8 +17,8 @@
+	            title: const Text ( 'Bem-vindo ao Flutter' ),
+	          ),
+	          corpo: Centro (
+-            criança:Texto(wordPair.asPascalCase),
++            filho:Palavras aleatórias(),
+	          ),
+	        ),
+	      );
+	    }
+```
+
+Reinicie o aplicativo. O aplicativo deve se comportar como antes, exibindo um par de palavras cada vez que você recarregar ou salvar o aplicativo.
+
+> **Dica:** Se você ver um aviso em um hot reload informando que pode ser necessário reiniciar o aplicativo, considere reiniciá-lo. O aviso 
+> pode ser um falso positivo, mas reiniciar seu aplicativo garante que suas alterações sejam refletidas na IU do aplicativo.
+
+#### Problemas?
+Se o seu aplicativo não estiver funcionando corretamente, procure erros de digitação. Se você quiser experimentar algumas das ferramentas de 
+depuração do Flutter, verifique o conjunto [DevTools](https://flutter.dev/docs/development/tools/devtools) de ferramentas de depuração e criação de perfil. 
+Se necessário, use o código no link a seguir para voltar aos trilhos.
+
+* [lib/main.dart](https://raw.githubusercontent.com/flutter/codelabs/master/startup_namer_null_safety/step3_stateful_widget/lib/main.dart)
+
+### Etapa 4: crie uma ListView de rolagem infinita
+Nesta etapa, você expandirá `_RandomWordsState` para gerar e exibir uma lista de pares de palavras. Conforme o usuário rola, 
+a lista (exibida em um `ListViewwidget`) cresce infinitamente. O construtor `ListView` de fábrica permite que você crie uma 
+exibição de lista preguiçosamente, sob demanda.
+
+1. Adicione uma lista `_suggestions` à classe `_RandomWordsState` para salvar pares de palavras sugeridas. Além disso, adicione uma variável `_biggerFont`
+   para aumentar o tamanho da fonte.
+
+```dart
+// lib/main.dart
+class _RandomWordsState extends State<RandomWords> {
+  final _suggestions = <WordPair>[];
+  final _biggerFont = const TextStyle(fontSize: 18.0);
+  // ···
+}
+```
+  
+  A seguir, você adicionará uma função `_buildSuggestions()` à classe `_RandomWordsState`. Este método cria o `ListView` que exibe o par de palavras sugerido.
+  
+  A classe `ListView` fornece uma propriedade de construtor `itemBuilder`, que é um construtor de fábrica e função de retorno de chamada especificada como 
+  uma função anônima. Dois parâmetros são passados para a função - o `BuildContext`, e o iterador de linha `i`,. O iterador começa em 0 e aumenta cada vez 
+  que a função é chamada. Ele é incrementado duas vezes para cada par de palavras sugerido: uma vez para `ListTile` e uma vez para `Divider`. Este modelo 
+  permite que a lista sugerida continue crescendo conforme o usuário rola.
+
+2. Adicione uma função `_buildSuggestions()` à classe `_RandomWordsState`:
+
+```dart
+// lib/main.dart (_buildSuggestions)
+
+Widget _buildSuggestions() {
+  return ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: /*1*/ (context, i) {
+        if (i.isOdd) return const Divider(); /*2*/
+
+        final index = i ~/ 2; /*3*/
+        if (index >= _suggestions.length) {
+          _suggestions.addAll(generateWordPairs().take(10)); /*4*/
+        }
+        return _buildRow(_suggestions[index]);
+      });
+}
+```
+  O itemBuilderretorno de chamada é chamado uma vez por par de palavras sugeridas e coloca cada sugestão em uma ListTilelinha. Para linhas pares, a função adiciona uma ListTilelinha para o par de palavras. Para linhas ímpares, a função adiciona um Dividerwidget para separar visualmente as entradas. Observe que o divisor pode ser difícil de ver em dispositivos menores.
+Adicione um widget divisor de um pixel de altura antes de cada linha no ListView.
+A expressão é i ~/ 2dividida ipor 2 e retorna um resultado inteiro. Por exemplo: 1, 2, 3, 4, 5 torna-se 0, 1, 1, 2, 2. Isso calcula o número real de pares de palavras no ListView, menos os widgets divisores.
+Se você atingiu o final dos pares de palavras disponíveis, gere mais 10 e adicione-as à lista de sugestões.
+A _buildSuggestions()função chama _buildRow()uma vez por par de palavras. Esta função exibe cada novo par em a ListTile, o que permite tornar as linhas mais atraentes na próxima etapa.
+
+Adicione uma _buildRow()função a _RandomWordsState:
+
+lib / main.dart (_buildRow)
+content_copy
+Widget _buildRow ( WordPair pair ) { return ListTile ( 
+    title : Text ( 
+      pair . AsPascalCase , 
+      style : _biggerFont , ), ); } 
+    
+    
+  
+Na _RandomWordsStateaula, atualize o build()método a ser usado _buildSuggestions(), em vez de chamar diretamente a biblioteca de geração de palavras. ( Scaffold implementa o layout visual básico do Material Design.) Substitua o corpo do método pelo código destacado:
+
+lib / main.dart (build)
+content_copy
+@override
+ Widget build ( BuildContext context ) { return Scaffold (   appBar : AppBar (     title : const Text ( 'Startup Name Generator' ), ),   body : _buildSuggestions (), ); } 
+   
+   
+    
+    
+  
+  
+Na MyAppaula, atualize o build()método alterando o título e alterando a página inicial para ser um RandomWordswidget:
+
+{step3_stateful_widget → step4_infinite_list} /lib/main.dart
+@@ -10,15 +10,8 @@
+1010	  class  MyApp  extends  StatelessWidget  {
+1111	    @sobrepor
+1212	    Construção de widget (contexto BuildContext) {
+1313	      return MaterialApp (
+14	-        título: 'Receber para Flutter' ,
+15	-        casa:Andaime(
+14	+        título: 'Comece Nome Gerador' ,
+15	+        casa:Palavras aleatórias(),
+16	-          appBar: AppBar (
+17	-            title: const Text ( 'Bem-vindo ao Flutter' ),
+18	-          ),
+19	-          corpo: Centro (
+20	-            criança: RandomWords (),
+21	-          ),
+22	-        ),
+2316	      );
+2417	    }
+Reinicie o aplicativo. Você deve ver uma lista de pares de palavras, não importa o quão longe você role.
+
+App na conclusão da quarta etapa no Android
+Android
+App na conclusão da quarta etapa no iOS
+iOS
+Problemas?
+Se o seu aplicativo não estiver funcionando corretamente, procure erros de digitação. Se você quiser experimentar algumas das ferramentas de depuração do Flutter, verifique o conjunto DevTools de ferramentas de depuração e criação de perfil. Se necessário, use o código no link a seguir para voltar aos trilhos.
+
+lib / main.dart
+Perfil ou versão executada
+ Importante: Do não testar o desempenho de seu aplicativo com debug e recarga quente habilitado.
+
+Até agora, você está executando seu aplicativo no modo de depuração . O modo de depuração troca desempenho por recursos úteis para o desenvolvedor, como recarga a quente e depuração em etapas. Não é inesperado ver um desempenho lento e animações instáveis ​​no modo de depuração. Quando estiver pronto para analisar o desempenho ou lançar seu aplicativo, você vai querer usar os modos de construção “profile” ou “release” do Flutter. Para obter mais detalhes, consulte os modos de construção do Flutter .
+
+ Importante: se você estiver preocupado com o tamanho do pacote do seu aplicativo, consulte Medindo o tamanho do seu aplicativo .
+
+Próximos passos
+O aplicativo da parte 2
+O aplicativo da parte 2
+Parabéns!
+
+Você escreveu um aplicativo interativo Flutter que roda em iOS e Android. Neste codelab, você:
+
+Criou um aplicativo Flutter do zero.
+Código escrito do Dart.
+Aproveitou uma biblioteca externa de terceiros.
+Recarregamento a quente usado para um ciclo de desenvolvimento mais rápido.
+Implementado um widget com estado.
+Criou uma lista de rolagem infinita carregada lentamente.
+Se desejar estender este aplicativo, prossiga para a parte 2 no site Google Developers Codelabs , onde você adiciona a seguinte funcionalidade:
+
+Implemente a interatividade adicionando um ícone de coração clicável para salvar os pares favoritos.
+Implemente a navegação para uma nova rota adicionando uma nova tela contendo os favoritos salvos.
+Modifique a cor do tema, criando um aplicativo todo branco.
