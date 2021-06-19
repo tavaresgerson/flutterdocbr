@@ -12,11 +12,11 @@ Caso tenha gostado do projeto, apoie, favorite e veja esse outro projeto:
 + Começando
   + Instalação
     + [Windows](get-started/install/windows.md)
-    + MacOS
+    + [MacOS](/get-started/install/macos.md)
     + Linux
     + ChromeOS
-  + Editor
-  + TestDrive
+  + [Editor](/get-started/editor.md)
+  + [TestDrive](/get-started/codelab.md) // Fazendo...
   + [Escrevendo seu primeiro aplicativo](get-started/codelab.md)
   + Veja mais
   + De Outra Plataforma?
